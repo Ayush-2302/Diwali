@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Diwali — Git Log</title>
+<style>
+  :root { --size: 1080px; }
+  body {
+    margin:0;
+    height:100vh;
+    display:grid;
+    place-items:center;
+    background: #f6f8fa;
+    color: #24292e;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    -webkit-font-smoothing:antialiased;
+  }
+  .card {
+    width: min(96vmin, var(--size));
+    aspect-ratio: 4/3;
+    max-height: 90vh;
+    position: relative;
+    background: #fff;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px -10px rgba(100,100,100,0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .header {
+    padding: 16px;
+    background: #f6f8fa;
+    border-bottom: 1px solid #e1e4e8;
+  }
+  .header h1 {
+    font-size: 20px;
+    margin: 0;
+    font-weight: 600;
+  }
+  .header p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: #586069;
+  }
+  .header .actions {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+  .btn {
+    background-color: #2ea44f; color: white; border: 1px solid rgba(27,31,35,0.15);
+    padding: 5px 16px; font-size: 14px; font-weight: 500; line-height: 20px;
+    border-radius: 6px; cursor: pointer;
+  }
+  .commit-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+  .commit {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e1e4e8;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0; transform: translateY(10px);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0px); }
+  }
+
+  .commit-info { flex-grow: 1; }
+  .commit-msg {
+    font-weight: 600;
+    color: #0366d6;
+    margin: 0 0 4px;
+    font-size: 16px;
+  }
+  .commit-meta {
+    font-size: 12px;
+    color: #586069;
+  }
+  .commit-hash {
+    font-family: "SF Mono", "Consolas", "Menlo", monospace;
+    color: #0366d6;
+    background: #f1f8ff;
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid #c8e1ff;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <h1>main/diwali-wishes</h1>
+    <p>✨ Latest commits to the festival of lights</p>
+    <div class="actions">
+      <button class="btn" id="new-commit-btn">New Commit</button>
+    </div>
+  </div>
+  <ul class="commit-list">
+    <li class="commit">
+      <div class="commit-info">
+        <p class="commit-msg">feat: Add prosperity and success</p>
+        <div class="commit-meta"><strong>Friend</strong> committed 1 minute ago</div>
+      </div>
+      <div class="commit-hash">d1a9a11</div>
+    </li>
+    <li class="commit">
+      <div class="commit-info">
+        <p class="commit-msg">refactor: Illuminate codebase with joy</p>
+        <div class="commit-meta"><strong>Friend</strong> committed 5 minutes ago</div>
+      </div>
+      <div class="commit-hash">c0d3e42</div>
+    </li>
+    <li class="commit">
+      <div class="commit-info">
+        <p class="commit-msg">fix: Remove darkness and bugs</p>
+        <div class="commit-meta"><strong>Friend</strong> committed 8 minutes ago</div>
+      </div>
+      <div class="commit-hash">b119e55</div>
+    </li>
+    <li class="commit">
+      <div class="commit-info">
+        <p class="commit-msg">docs: Update wishes for a Happy Diwali</p>
+        <div class="commit-meta"><strong>Friend</strong> committed 12 minutes ago</div>
+      </div>
+      <div class="commit-hash">a021a9a</div>
+    </li>
+    <li class="commit">
+      <div class="commit-info">
+        <p class="commit-msg">Initial commit</p>
+        <div class="commit-meta"><strong>Friend</strong> committed 15 minutes ago</div>
+      </div>
+      <div class="commit-hash">1n171a1</div>
+    </li>
+  </ul>
+</div>
+
+<script>
+  const commitList = document.querySelector('.commit-list');
+  const newCommitBtn = document.getElementById('new-commit-btn');
+
+  const commitMessages = [
+    'feat: Deploy new celebrations',
+    'chore: Add more sparkle to UI',
+    'fix: Patch remaining darkness',
+    'style: Prettier formatting for wishes',
+    'build: Bundle joy and happiness',
+    'test: Ensure 100% festival coverage',
+    'perf: Optimize light rendering',
+    'ci: Automate happiness delivery'
+  ];
+
+  function createCommit() {
+    const msg = commitMessages[Math.floor(Math.random() * commitMessages.length)];
+    const hash = Math.random().toString(16).substring(2, 9);
+
+    const li = document.createElement('li');
+    li.className = 'commit';
+    li.innerHTML = `
+      <div class="commit-info">
+        <p class="commit-msg">${msg}</p>
+        <div class="commit-meta"><strong>Friend</strong> committed just now</div>
+      </div>
+      <div class="commit-hash">${hash}</div>
+    `;
+    
+    commitList.prepend(li);
+  }
+
+  newCommitBtn.addEventListener('click', createCommit);
+
+  // Stagger initial animations
+  document.querySelectorAll('.commit').forEach((commit, index) => {
+    commit.style.animationDelay = `${index * 0.2}s`;
+  });
+
+  // Remove animation from newly added commits so they appear instantly
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === 1 && node.classList.contains('commit')) {
+          node.style.animation = 'fadeIn 0.3s ease-out forwards';
+        }
+      });
+    });
+  });
+  observer.observe(commitList, { childList: true });
+</script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Diwali — Festival of Lights</title>
+<style>
+  :root {
+    --glow-color: hsl(35, 100%, 50%);
+  }
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(180deg, #02021a 0%, #100a2c 70%, #1c133a 100%);
+    color: #fff;
+    font-family: 'Quintessential', serif, system-ui;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .sky {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Enhanced starfield with more depth */
+  .stars, .stars2, .stars3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-repeat: repeat;
+    background-size: 500px 500px;
+    opacity: 0.5;
+    animation: twinkle 60s linear infinite;
+  }
+  .stars {
+    background-image: radial-gradient(1px 1px at 25px 25px, white, transparent),
+                      radial-gradient(1px 1px at 125px 175px, white, transparent),
+                      radial-gradient(1.5px 1.5px at 250px 300px, white, transparent);
+  }
+  .stars2 {
+    background-image: radial-gradient(1px 1px at 75px 400px, white, transparent),
+                      radial-gradient(1.5px 1.5px at 375px 100px, white, transparent);
+    animation-duration: 90s;
+    opacity: 0.7;
+  }
+  .stars3 {
+    background-image: radial-gradient(1px 1px at 450px 50px, white, transparent),
+                      radial-gradient(1.2px 1.2px at 100px 250px, white, transparent);
+    animation-duration: 120s;
+    opacity: 0.4;
+  }
+
+  @keyframes twinkle {
+    from { transform: translateX(0); }
+    to { transform: translateX(-500px); }
+  }
+
+  .content {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+    text-shadow: 0 0 20px hsla(35, 100%, 50%, 0.5);
+  }
+
+  h1 {
+    font-size: clamp(3rem, 10vmin, 6rem);
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    background: linear-gradient(45deg, #ffd700, #ff6b35, #ffd700);
+    background-size: 200% 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  p {
+    font-size: clamp(1rem, 3vmin, 1.5rem);
+    opacity: 0.9;
+    margin-top: 0.5em;
+    color: #ffdfa0;
+  }
+
+  .lantern {
+    position: absolute;
+    bottom: -200px;
+    width: 100px;
+    height: 120px;
+    background: radial-gradient(circle at 50% 40%, var(--glow-color), #ff5f00 80%);
+    border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+    box-shadow: 0 0 30px 5px var(--glow-color), inset 0 -10px 20px #ff8c00;
+    filter: brightness(1.1);
+    animation: floatUp linear forwards;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+
+  .lantern:hover {
+    transform: scale(1.1);
+    filter: brightness(1.3);
+  }
+
+  .lantern::before {
+    content: '';
+    position: absolute;
+    top: -8px; left: 15%; width: 70%; height: 15px;
+    background: linear-gradient(135deg, #8b4513, #654321);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  /* Enhanced floating animation with more realistic movement */
+  @keyframes floatUp {
+    0% {
+      bottom: -200px;
+      transform: translateX(0) rotate(0deg);
+      opacity: 0.9;
+    }
+    20% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      bottom: calc(100vh + 100px);
+      transform: translateX(var(--sway, 0)) rotate(var(--rotate, 0));
+      opacity: 0;
+    }
+  }
+
+  .wish {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: #ffdfa0;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    animation: showWish 2s 1s forwards;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  }
+
+  @keyframes showWish {
+    to { opacity: 1; }
+  }
+
+  /* Firework particles for cracker burst effect */
+  .firework {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: explode 1.5s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes explode {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(3);
+    }
+  }
+
+  /* Additional sparkle effect */
+  .sparkle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+    animation: sparkle 0.8s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes sparkle {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(2) rotate(180deg);
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky">
+  <div class="stars"></div>
+  <div class="stars2"></div>
+  <div class="stars3"></div>
+
+  <div class="content">
+    <h1>✨ Shubh Deepavali ✨</h1>
+    <p>May this Festival of Lights illuminate your path to prosperity and joy<br>
+    <small style="opacity: 0.8;">Click anywhere to release a lantern • Click lanterns for fireworks</small></p>
+  </div>
+</div>
+
+<script>
+  const sky = document.getElementById('sky');
+  
+  // Enhanced wishes array with more meaningful Diwali messages
+  const wishes = [
+    "✨ Light over Darkness",
+    "🪔 Prosperity & Peace",
+    "💫 New Beginnings",
+    "🌟 Health & Happiness",
+    "✨ Success & Growth",
+    "🪔 Divine Blessings",
+    "💫 Hope & Joy",
+    "🌟 Love & Laughter",
+    "✨ Good Fortune",
+    "🪔 Wisdom & Knowledge",
+    "💫 Inner Peace",
+    "🌟 Family Unity",
+    "✨ Bright Future",
+    "🪔 Spiritual Growth",
+    "💫 Gratitude & Grace",
+    "🪔 Harmony & Balance",
+    "💫 Dreams Come True",
+    "🌟 Eternal Bliss",
+    "✨ Victory over Evil",
+    "🪔 Abundance & Wealth",
+    "💫 Courage & Strength",
+    "🌟 Friendship & Bonds",
+    "✨ Purity & Innocence",
+    "🪔 Enlightenment",
+    "💫 Joyful Celebrations",
+    "🌟 Peaceful Nights",
+    "✨ Festive Cheer",
+    "🪔 Sacred Traditions",
+    "💫 Magical Moments",
+    "🌟 Warm Hearts"
+  ];
+
+  function releaseLantern(x) {
+    const lantern = document.createElement('div');
+    lantern.className = 'lantern';
+    
+    // Enhanced lantern properties for more realistic movement
+    const duration = 20 + Math.random() * 15; // 20-35 seconds
+    const sway = (Math.random() - 0.5) * 300; // More sway
+    const rotation = (Math.random() - 0.5) * 30; // More rotation
+    const hue = 25 + Math.random() * 35; // Wider color range
+
+    lantern.style.left = `${x - 50}px`; // Center the lantern
+    lantern.style.animationDuration = `${duration}s`;
+    lantern.style.setProperty('--sway', `${sway}px`);
+    lantern.style.setProperty('--rotate', `${rotation}deg`);
+    lantern.style.setProperty('--glow-color', `hsl(${hue}, 100%, 50%)`);
+
+    const wish = document.createElement('div');
+    wish.className = 'wish';
+    wish.textContent = wishes[Math.floor(Math.random() * wishes.length)];
+    lantern.appendChild(wish);
+
+    // Add click event for firework burst
+    lantern.addEventListener('click', (e) => {
+      e.stopPropagation();
+      createFireworkBurst(e.clientX, e.clientY);
+      // Remove lantern with a small delay for effect
+      setTimeout(() => {
+        if (lantern.parentNode) {
+          lantern.remove();
+        }
+      }, 200);
+    });
+
+    sky.appendChild(lantern);
+
+    // Auto-remove lantern after animation
+    setTimeout(() => {
+      if (lantern.parentNode) {
+        lantern.remove();
+      }
+    }, duration * 1000 + 1000);
+  }
+
+  function createFireworkBurst(x, y) {
+    const colors = ['#ff6b35', '#f7931e', '#ffd700', '#ff1744', '#e91e63', '#9c27b0', '#3f51b5', '#2196f3', '#00bcd4', '#4caf50'];
+    
+    // Create main firework burst
+    for (let i = 0; i < 25; i++) {
+      const firework = document.createElement('div');
+      firework.className = 'firework';
+      
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = Math.random() * 120 + 40;
+      const fx = x + Math.cos(angle) * distance;
+      const fy = y + Math.sin(angle) * distance;
+      
+      firework.style.left = `${x}px`;
+      firework.style.top = `${y}px`;
+      firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+      firework.style.transform = `translate(${fx - x}px, ${fy - y}px)`;
+      firework.style.animationDelay = `${Math.random() * 0.3}s`;
+      
+      document.body.appendChild(firework);
+      
+      setTimeout(() => firework.remove(), 1500);
+    }
+
+    // Add sparkle effects
+    for (let i = 0; i < 15; i++) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = Math.random() * 80 + 20;
+      const sx = x + Math.cos(angle) * distance;
+      const sy = y + Math.sin(angle) * distance;
+      
+      sparkle.style.left = `${sx}px`;
+      sparkle.style.top = `${sy}px`;
+      sparkle.style.animationDelay = `${Math.random() * 0.2}s`;
+      
+      document.body.appendChild(sparkle);
+      
+      setTimeout(() => sparkle.remove(), 800);
+    }
+  }
+
+  // Release a lantern on background click
+  window.addEventListener('click', (e) => {
+    // Only trigger if not clicking on a lantern
+    if (!e.target.classList.contains('lantern') && !e.target.classList.contains('wish')) {
+      releaseLantern(e.clientX);
+    }
+  });
+
+  // Auto-release lanterns at intervals
+  setInterval(() => {
+    const randomX = Math.random() * window.innerWidth;
+    releaseLantern(randomX);
+  }, 3000); // Every 3 seconds
+
+  // Initial lantern on page load
+  setTimeout(() => {
+    releaseLantern(window.innerWidth / 2);
+  }, 1000);
+
+</script>
+
+</body>
+</html>

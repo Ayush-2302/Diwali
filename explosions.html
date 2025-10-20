@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic Cracker Burst</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0a;
+            overflow: hidden;
+            cursor: crosshair;
+            height: 100vh;
+        }
+        
+        #crackerCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: transparent;
+        }
+        
+        .cracker {
+            position: absolute;
+            width: 8px;
+            height: 40px;
+            background: linear-gradient(to top, #8B4513, #D2691E);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+        
+        .cracker::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 8px;
+            background: #222;
+            border-radius: 1px;
+        }
+        
+        .cracker:hover {
+            transform: scale(1.2);
+            filter: brightness(1.2);
+        }
+        
+        .lit {
+            animation: crackle 0.3s ease-out forwards;
+        }
+        
+        @keyframes crackle {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5) rotate(5deg); }
+            100% { opacity: 0; transform: scale(0) rotate(10deg); }
+        }
+        
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #444;
+        }
+        
+        .btn {
+            background: #444;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #666;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="crackerCanvas"></canvas>
+    
+    <div class="controls">
+        <button class="btn" onclick="addCracker()">Add Cracker</button>
+        <button class="btn" onclick="clearAll()">Clear All</button>
+        <button class="btn" onclick="chainExplosion()">Chain Blast</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('crackerCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        let particles = [];
+        let crackers = [];
+        
+        // Simple realistic colors - orange/red for fire, white for sparks
+        const explosionColors = ['#FF4500', '#FF6600', '#FF8C00', '#FFD700', '#FFF'];
+        
+        class CrackerParticle {
+            constructor(x, y, intensity = 1) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 15 * intensity;
+                this.vy = (Math.random() - 0.5) * 15 * intensity;
+                this.life = 60 + Math.random() * 40;
+                this.maxLife = this.life;
+                this.size = Math.random() * 4 + 2;
+                this.color = explosionColors[Math.floor(Math.random() * explosionColors.length)];
+                this.gravity = 0.15;
+                this.friction = 0.95;
+            }
+            
+            update() {
+                this.vx *= this.friction;
+                this.vy = this.vy * this.friction + this.gravity;
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                this.life--;
+                this.size *= 0.98;
+                
+                return this.life > 0 && this.size > 0.1;
+            }
+            
+            draw() {
+                const alpha = this.life / this.maxLife;
+                
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                
+                // Simple glowing effect
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Bright center for realism
+                if (alpha > 0.5) {
+                    ctx.fillStyle = '#FFF';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size * 0.3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                ctx.restore();
+            }
+        }
+        
+        class Cracker {
+            constructor(x, y) {
+                this.element = document.createElement('div');
+                this.element.className = 'cracker';
+                this.element.style.left = x + 'px';
+                this.element.style.top = y + 'px';
+                this.x = x;
+                this.y = y;
+                
+                this.element.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.explode();
+                });
+                
+                document.body.appendChild(this.element);
+                crackers.push(this);
+            }
+            
+            explode() {
+                // Add lit animation
+                this.element.classList.add('lit');
+                
+                // Create explosion particles
+                const particleCount = 50 + Math.random() * 30;
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new CrackerParticle(this.x + 4, this.y + 20, 1.2));
+                }
+                
+                // Create screen flash effect
+                this.createFlash();
+                
+                // Remove cracker after animation
+                setTimeout(() => {
+                    if (this.element.parentNode) {
+                        this.element.remove();
+                        const index = crackers.indexOf(this);
+                        if (index > -1) crackers.splice(index, 1);
+                    }
+                }, 300);
+            }
+            
+            createFlash() {
+                const flash = document.createElement('div');
+                flash.style.position = 'absolute';
+                flash.style.left = this.x + 'px';
+                flash.style.top = this.y + 'px';
+                flash.style.width = '200px';
+                flash.style.height = '200px';
+                flash.style.background = 'radial-gradient(circle, rgba(255,255,255,0.3), transparent 70%)';
+                flash.style.borderRadius = '50%';
+                flash.style.transform = 'translate(-50%, -50%)';
+                flash.style.pointerEvents = 'none';
+                flash.style.animation = 'flashFade 0.5s ease-out forwards';
+                
+                document.body.appendChild(flash);
+                setTimeout(() => flash.remove(), 500);
+            }
+        }
+        
+        // Add flash animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes flashFade {
+                0% { opacity: 1; transform: translate(-50%, -50%) scale(0.1); }
+                50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+                100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        function animate() {
+            // Clear canvas with slight trail for realistic smoke effect
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Update and draw particles
+            particles = particles.filter(particle => {
+                const alive = particle.update();
+                if (alive) particle.draw();
+                return alive;
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        
+        function addCracker() {
+            const x = Math.random() * (canvas.width - 100) + 50;
+            const y = Math.random() * (canvas.height - 200) + 100;
+            new Cracker(x, y);
+        }
+        
+        function clearAll() {
+            crackers.forEach(cracker => {
+                if (cracker.element.parentNode) {
+                    cracker.element.remove();
+                }
+            });
+            crackers = [];
+            particles = [];
+        }
+        
+        function chainExplosion() {
+            clearAll();
+            
+            // Create a line of crackers
+            const crackerCount = 8;
+            const startX = canvas.width * 0.2;
+            const endX = canvas.width * 0.8;
+            const y = canvas.height * 0.7;
+            
+            for (let i = 0; i < crackerCount; i++) {
+                const x = startX + (endX - startX) * (i / (crackerCount - 1));
+                new Cracker(x, y);
+            }
+            
+            // Auto-explode them in sequence
+            setTimeout(() => {
+                crackers.forEach((cracker, index) => {
+                    setTimeout(() => {
+                        if (cracker.element.parentNode) {
+                            cracker.explode();
+                        }
+                    }, index * 300);
+                });
+            }, 1000);
+        }
+        
+        // Click to add crackers
+        canvas.addEventListener('click', (e) => {
+            new Cracker(e.clientX, e.clientY);
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Start animation
+        animate();
+        
+        // Add initial crackers
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => addCracker(), i * 500);
+        }
+    </script>
+</body>
+</html>
